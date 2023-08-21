@@ -1,6 +1,6 @@
 Package: bizColoR
 Title: Farben BIZ
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Dan", "Studer", , "dan.studer@be.ch", role = c("aut", "cre"))
 Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für die Verwendung in ggplot2.

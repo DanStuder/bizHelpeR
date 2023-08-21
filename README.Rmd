@@ -1,0 +1,87 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# bizColoR
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`bizColoR` enthält die Farben des aktuellen CI/CD sowie einige Funktionen für den einfachen Einsatz in `ggplot2`
+
+## Installation
+
+Um die aktuelle Version des Packages direkt von [GitHub](https://github.com/) zu installieren, kannst du in R den folgenden Code ausführen:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("DanStuder/bizColoR")
+```
+
+## Beispiel
+
+Es gibt drei Paletten für verschiedene Bereiche:
+- BIZ allgemein: "BIZ"
+- Geschäftsbereich Laufbahn: "LB"
+- Geschäftsbereich Berufs- und Studienbberatung: "BSB"
+
+Die Farben der jeweiligen Paletten können mit `biz_colors(palette = c("BIZ", "BSB", "LB"), ...)` aufgerufen werden:
+```{r example}
+library(bizColoR)
+
+biz_colors("BIZ")
+biz_colors("LB")
+biz_colors("BSB")
+```
+
+Mit `biz_pal(palette = "BIZ", reverse = FALSE, ...)` kannst du die Reihenfolge der Paletten umkehren und Abstufungen zwischen den gegebenen Farben auffüllen. Z.B. beinhaltet die Palette "BIZ" 7 Farben, aber manchmal werden mehr als 7 Farben benötigt:
+
+```{r cars}
+biz_pal("BIZ")(12)
+```
+
+Für die Verwendung in `ggplot2` kann mit `scale_color_biz` und `scale_fill_biz` gearbeitet werden, um ganz einfach die Farben zuübergeben:
+
+```{r}
+library(ggplot2)
+ggplot(iris, 
+       aes(Sepal.Width, 
+           Sepal.Length, 
+           color = Species)) +
+  geom_point(size = 4) +
+  scale_color_biz()
+```
+
+```{r}
+ggplot(iris, 
+       aes(Sepal.Width, 
+           Sepal.Length, 
+           color = Sepal.Length)) +
+  geom_point(size = 4, 
+             alpha = .6) +
+  scale_color_biz(discrete = FALSE,
+                  palette = "LB")
+```
+
+```{r}
+ggplot(mpg, 
+       aes(manufacturer, 
+           fill = manufacturer)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  scale_fill_biz(palette = "BSB", 
+                 guide = "none")
+```
+
