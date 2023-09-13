@@ -1,9 +1,11 @@
-Package: bizColoR
-Title: Farben BIZ
+Package: bizHelpeR
+Title: Helferfunktionen für BIZleR
 Version: 0.1.0
 Authors@R: 
     person("Dan", "Studer", , "dan.studer@be.ch", role = c("aut", "cre"))
-Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für die Verwendung in ggplot2.
+Description: 
+    Beinhaltet die Farben der Corporate Identity der BIZ Bern für die Verwendung in ggplot2.
+    Zudem eine Funktion für die automatische Generierung und Kombination verschiedener PDFs der Testergebnisse.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

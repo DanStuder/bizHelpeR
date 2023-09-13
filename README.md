@@ -57,8 +57,8 @@ biz_pal("BIZ")(12)
 ```
 
 Für die Verwendung in `ggplot2` kann mit `scale_color_biz` und
-`scale_fill_biz` gearbeitet werden, um ganz einfach die Farben
-zu übergeben:
+`scale_fill_biz` gearbeitet werden, um ganz einfach die Farben zu
+übergeben:
 
 ``` r
 library(ggplot2)
