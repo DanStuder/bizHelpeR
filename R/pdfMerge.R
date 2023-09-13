@@ -1,13 +1,21 @@
-# install.packages("doconv")
-# install.packages("qpdf")
+#' pdfMergeR
+#'
+#' @param modul Name des Moduls, falls abweichend vom gewählten Ordner
+#' @param directory Ordner, für den die Dateien erstellt werden sollen
+#'
+#' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
+#' @importFrom doconv docx2pdf
+#' @importFrom pdftools pdf_combine, pdf_length, pdf_subset
+#' @importFrom utils choose.dir
+#' @export
 
-pdfMergeR <- function(modul = NULL) {
+
+pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
 
   start_time <- Sys.time()
 
   # Setze Directory (User kann im Browser anwählen)
-  setwd(choose.dir(default = getwd(),
-                   caption = "Wähle das zu bearbeitende Modul"))
+  setwd(directory)
 
   modul <- basename(getwd())
 
@@ -69,10 +77,10 @@ pdfMergeR <- function(modul = NULL) {
     ## bei Modul VLGK muss noch der Fragebogen angehängt werden
     if(modul == "VLGK") {
       fragebogen_in <- paste(paste(client,
-                                client,
-                                sep = "/"),
-                          "Fragebogen.pdf",
-                          sep = "_")
+                                   client,
+                                   sep = "/"),
+                             "Fragebogen.pdf",
+                             sep = "_")
       fragebogen_out <- paste(paste(client,
                                     client,
                                     sep = "/"),
@@ -82,11 +90,11 @@ pdfMergeR <- function(modul = NULL) {
       # dann liegt das daran, dass im Scan noch eine leere Seite drin ist,
       # die abgeschnitten werden kann
       FB_LENGTH <- 5 # Konstante, die verändert werden kann/muss,
-                     # wenn der FB verändert wird.
-      if(qpdf::pdf_length(input = fragebogen_in) > FB_LENGTH) {
-        qpdf::pdf_subset(input = fragebogen_in,
-                         pages = 1:5,
-                         output = fragebogen_out)
+      # wenn der FB verändert wird.
+      if(pdftools::pdf_length(input = fragebogen_in) > FB_LENGTH) {
+        pdftools::pdf_subset(input = fragebogen_in,
+                             pages = 1:5,
+                             output = fragebogen_out)
         file.remove(fragebogen_in)
         file.rename(from = fragebogen_out,
                     to = fragebogen_in)
@@ -103,8 +111,8 @@ pdfMergeR <- function(modul = NULL) {
     if(!any(grepl(modul_name,
                   list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      qpdf::pdf_combine(input = all_in_names,
-                        output = all_out_name)
+      pdftools::pdf_combine(input = all_in_names,
+                            output = all_out_name)
     }
 
     # Separiere das Protokoll
@@ -117,9 +125,9 @@ pdfMergeR <- function(modul = NULL) {
     ## Suche nach dem String (-> prüfe, ob Dokument schon existiert)
     if(!any(grepl(PROTOCOL, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      qpdf::pdf_subset(input = protocol_in_name,
-                       pages = 1,
-                       output = protocol_out_name)
+      pdftools::pdf_subset(input = protocol_in_name,
+                           pages = 1,
+                           output = protocol_out_name)
     }
 
     # Separiere die Rückmeldemappe
@@ -132,9 +140,9 @@ pdfMergeR <- function(modul = NULL) {
     ## Suche nach den String (-> prüfe, ob Dokument schon existiert)
     if(!any(grepl(RMM, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      qpdf::pdf_subset(input = rmm_in_name,
-                       pages = -1,
-                       output = rmm_out_name)
+      pdftools::pdf_subset(input = rmm_in_name,
+                           pages = -1,
+                           output = rmm_out_name)
     }
 
     # Entferne das Dokument "Mappe"
@@ -168,8 +176,3 @@ pdfMergeR <- function(modul = NULL) {
               "Sekunden"))
 
 }
-
-pdfMergeR()
-
-
-

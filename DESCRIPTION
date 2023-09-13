@@ -11,6 +11,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
-    ggplot2
-URL: https://github.com/DanStuder/bizColoR
-BugReports: https://github.com/DanStuder/bizColoR/issues
+    doconv,
+    ggplot2,
+    pdftools
+URL: https://github.com/DanStuder/bizHelpeR
+BugReports: https://github.com/DanStuder/bizHelpeR/issues
