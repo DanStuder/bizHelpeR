@@ -5,12 +5,12 @@
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
 #' @importFrom doconv docx2pdf
-#' @importFrom pdftools pdf_combine, pdf_length, pdf_subset
+#' @importFrom qpdf pdf_combine pdf_length pdf_subset
 #' @importFrom utils choose.dir
 #' @export
 
 
-pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
+pdfMergeR <- function(directory = utils::choose.dir(), modul = NULL) {
 
   start_time <- Sys.time()
 
@@ -91,8 +91,8 @@ pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
       # die abgeschnitten werden kann
       FB_LENGTH <- 5 # Konstante, die verändert werden kann/muss,
       # wenn der FB verändert wird.
-      if(pdftools::pdf_length(input = fragebogen_in) > FB_LENGTH) {
-        pdftools::pdf_subset(input = fragebogen_in,
+      if(qpdf::pdf_length(input = fragebogen_in) > FB_LENGTH) {
+        qpdf::pdf_subset(input = fragebogen_in,
                              pages = 1:5,
                              output = fragebogen_out)
         file.remove(fragebogen_in)
@@ -111,7 +111,7 @@ pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
     if(!any(grepl(modul_name,
                   list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      pdftools::pdf_combine(input = all_in_names,
+      qpdf::pdf_combine(input = all_in_names,
                             output = all_out_name)
     }
 
@@ -125,7 +125,7 @@ pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
     ## Suche nach dem String (-> prüfe, ob Dokument schon existiert)
     if(!any(grepl(PROTOCOL, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      pdftools::pdf_subset(input = protocol_in_name,
+      qpdf::pdf_subset(input = protocol_in_name,
                            pages = 1,
                            output = protocol_out_name)
     }
@@ -140,7 +140,7 @@ pdfMergeR <- function(modul = NULL, directory = utils::choose.dir()) {
     ## Suche nach den String (-> prüfe, ob Dokument schon existiert)
     if(!any(grepl(RMM, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
-      pdftools::pdf_subset(input = rmm_in_name,
+      qpdf::pdf_subset(input = rmm_in_name,
                            pages = -1,
                            output = rmm_out_name)
     }
