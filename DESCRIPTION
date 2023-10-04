@@ -12,7 +12,8 @@ BugReports: https://github.com/DanStuder/bizHelpeR/issues
 Imports: 
     doconv,
     ggplot2,
-    qpdf
+    qpdf,
+    tcltk
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

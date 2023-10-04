@@ -6,11 +6,11 @@
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
 #' @importFrom doconv docx2pdf
 #' @importFrom qpdf pdf_combine pdf_length pdf_subset
-#' @importFrom utils choose.dir
+#' @importFrom tcltk tk_choose.dir
 #' @export
 
 
-pdfMergeR <- function(directory = utils::choose.dir(), modul = NULL) {
+pdfMergeR <- function(directory = tcltk::tk_choose.dir(), modul = NULL) {
 
   start_time <- Sys.time()
 
