@@ -4,7 +4,7 @@
 \alias{pdfMergeR}
 \title{pdfMergeR}
 \usage{
-pdfMergeR(directory = utils::choose.dir(), modul = NULL)
+pdfMergeR(directory = tcltk::tk_choose.dir(), modul = NULL)
 }
 \arguments{
 \item{directory}{Ordner, für den die Dateien erstellt werden sollen}
