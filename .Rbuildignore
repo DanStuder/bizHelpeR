@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^bizHelpeR\.Rcheck$
+^bizHelpeR.*\.tar\.gz$
+^bizHelpeR.*\.tgz$
