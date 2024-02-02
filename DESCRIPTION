@@ -1,6 +1,6 @@
 Package: bizHelpeR
 Title: Helferfunktionen für BIZleR
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Dan", "Studer", , "dan.studer@be.ch", role = c("aut", "cre"))
 Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für
@@ -12,8 +12,11 @@ BugReports: https://github.com/DanStuder/bizHelpeR/issues
 Imports: 
     doconv,
     ggplot2,
+    pdftools,
     qpdf,
+    stringi,
+    stringr,
     tcltk
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
