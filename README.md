@@ -10,9 +10,9 @@
 BIZleR.  
 Das sind einerseits die Farben des aktuellen CI/CD sowie einige
 Funktionen für den einfachen Einsatz in `ggplot2`.  
-Zudem hilft `pdfMergeR()` bei der schnelleren Erstellung der
-Rückmeldemappe und der Kombination der verschiedenen PDFs, die für die
-Rückmeldung der Testergebnisse nötig sind.
+Zudem hilft `merger()` bei der schnelleren Erstellung der Rückmeldemappe
+und der Kombination der verschiedenen PDFs, die für die Rückmeldung der
+Testergebnisse nötig sind.
 
 ## Installation
 
@@ -36,6 +36,7 @@ Die Farben der jeweiligen Paletten können mit
 
 ``` r
 library(bizHelpeR)
+#> Warning in fun(libname, pkgname): couldn't connect to display ":0"
 
 biz_colors("BIZ")
 #>   burgund aubergine dunkelrot   rotgrau rosabeige rosabraun     monza 
@@ -103,7 +104,7 @@ ggplot(mpg,
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-## `pdfMergeR()`
+## `merger()`
 
 Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig: -
 Ein Ordner mit dem Namen des Moduls (z.B. “A”) - Darin enthalten sind
@@ -118,7 +119,7 @@ Format “Vorname Nachname Fragebogen.pdf” abgelegt werden.
 
 Ist diese Struktur für jede Person gegeben, wird die Funktion
 aufgerufen:  
-`bizHelpeR::pdfMergeR()`
+`bizHelpeR::merger()`
 
 Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen
 angewählt werden muss. Anschliessend wird automatisch aus der
