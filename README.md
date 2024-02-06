@@ -106,26 +106,33 @@ ggplot(mpg,
 
 ## `merger()`
 
-Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig: -
-Ein Ordner mit dem Namen des Moduls (z.B. “A”) - Darin enthalten sind
-Unterordner mit den Namen der Testpersonen - Pro Testperson sind drei
-Dokumente enthalten: - Rückmeldemappe als Word im Format “Vorname
-Nachname Mappe.docx” - PDF mit den Ergebnissen im Format “Vorname
-Nachname Ergebnisse.pdf” - PDF mit den Rohdaten im Format “Vorname
-Nachname Rohdaten.pdf”
+Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig:  
+- Ein Ordner mit dem Namen des Moduls (z.B. “A”)  
+- Darin enthalten sind Unterordner mit den Namen der Testpersonen  
+- Pro Testperson sind mindestens drei Dokumente enthalten:  
+a) Rückmeldemappe als Word im Format “Vorname Nachname Mappe.docx”  
+b) PDF mit den Ergebnissen im Format “Vorname Nachname Ergebnisse.pdf”  
+c) PDF mit den Rohdaten im Format “Vorname Nachname Rohdaten.pdf”
 
-Falls es sich um Modul “VLGK” handelt, muss zusätzlich der Fragebogen im
-Format “Vorname Nachname Fragebogen.pdf” abgelegt werden.
+Falls es sich um Modul “B” handelt, muss zusätzlich der Fragebogen im
+Format “Vorname Nachname Fragebogen.pdf” abgelegt werden.  
+Zudem kann der Q-Level im Personen-Ordner abgelegt werden. Dieses
+Dokument muss nicht umbenannt werden, sondern kann direkt aus der
+Mail-Nachricht per Drag-and-Drop in den Personen-Ordner gezogen werden.
 
 Ist diese Struktur für jede Person gegeben, wird die Funktion
-aufgerufen:  
-`bizHelpeR::merger()`
+aufgerufen:
+
+``` r
+bizHelpeR::merger()
+```
 
 Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen
 angewählt werden muss. Anschliessend wird automatisch aus der
 Rückmeldemappe ein PDF generiert und die PDFs kombiniert und
 zugeschnitten.
 
-ACHTUNG! Die Funktion überschreibt keine existierenden Dokumente, um
-Zeit zu sparen. Wenn ein Dokument (z.B. “… Rückmeldemappe.pdf”) neu
-erstellt werden soll, muss die existierende Datei gelöscht werden.
+HINWEIS! Um Zeit zu sparen, überschreibt die Funktion keine
+existierenden Dokumente.  
+Wenn ein Dokument (z.B. “… Rückmeldemappe.pdf”) neu erstellt werden
+soll, muss die existierende Datei gelöscht werden.
