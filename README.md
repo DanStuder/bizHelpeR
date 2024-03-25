@@ -25,6 +25,39 @@ folgenden Code ausführen:
 devtools::install_github("DanStuder/bizHelpeR")
 ```
 
+## `merger()`
+
+Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig:  
+- Ein Ordner mit dem Namen des Moduls (z.B. “A”)  
+- Darin enthalten sind Unterordner mit den Namen der Testpersonen  
+- Pro Testperson sind mindestens drei Dokumente enthalten:  
+a) Rückmeldemappe als Word im Format “Vorname Nachname Mappe.docx”  
+b) PDF mit den Ergebnissen im Format “Vorname Nachname Ergebnisse.pdf”  
+c) PDF mit den Rohdaten im Format “Vorname Nachname Rohdaten.pdf”
+
+Falls es sich um Modul “B” handelt, muss zusätzlich der Fragebogen im
+Format “Vorname Nachname Fragebogen.pdf” abgelegt werden.  
+Zudem kann der Q-Level im Personen-Ordner abgelegt werden. Dieses
+Dokument muss nicht umbenannt werden, sondern kann direkt aus der
+Mail-Nachricht per Drag-and-Drop in den Personen-Ordner gezogen werden.
+
+Ist diese Struktur für jede Person gegeben, wird die Funktion
+aufgerufen:
+
+``` r
+bizHelpeR::merger()
+```
+
+Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen
+angewählt werden muss. Anschliessend wird automatisch aus der
+Rückmeldemappe ein PDF generiert und die PDFs kombiniert und
+zugeschnitten.
+
+HINWEIS! Um Zeit zu sparen, überschreibt die Funktion keine
+existierenden Dokumente.  
+Wenn ein Dokument (z.B. “… Rückmeldemappe.pdf”) neu erstellt werden
+soll, muss die existierende Datei gelöscht werden.
+
 ## Beispiel für die Farben
 
 Es gibt drei Paletten für verschiedene Bereiche: - BIZ allgemein:
@@ -76,7 +109,7 @@ ggplot(iris,
   scale_color_biz()
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
 ggplot(iris, 
@@ -89,7 +122,7 @@ ggplot(iris,
                   palette = "LB")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
 ggplot(mpg, 
@@ -102,37 +135,31 @@ ggplot(mpg,
                  guide = "none")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-## `merger()`
+## `alphaHacker()`
 
-Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig:  
-- Ein Ordner mit dem Namen des Moduls (z.B. “A”)  
-- Darin enthalten sind Unterordner mit den Namen der Testpersonen  
-- Pro Testperson sind mindestens drei Dokumente enthalten:  
-a) Rückmeldemappe als Word im Format “Vorname Nachname Mappe.docx”  
-b) PDF mit den Ergebnissen im Format “Vorname Nachname Ergebnisse.pdf”  
-c) PDF mit den Rohdaten im Format “Vorname Nachname Rohdaten.pdf”
-
-Falls es sich um Modul “B” handelt, muss zusätzlich der Fragebogen im
-Format “Vorname Nachname Fragebogen.pdf” abgelegt werden.  
-Zudem kann der Q-Level im Personen-Ordner abgelegt werden. Dieses
-Dokument muss nicht umbenannt werden, sondern kann direkt aus der
-Mail-Nachricht per Drag-and-Drop in den Personen-Ordner gezogen werden.
-
-Ist diese Struktur für jede Person gegeben, wird die Funktion
-aufgerufen:
+Diese Funktion soll es erleichtern, aus einem Set von Items diejenigen
+zu finden, die dezente Cronbachs alpha Werte generieren. Sie sollte
+lediglich explorativ eingesetzt werden. Zudem muss das Ergebnis stets
+aus theoretischer Sicht überprüft werden.
 
 ``` r
-bizHelpeR::merger()
+data <- psych::bfi[1:5]
+
+# Ergebnis sollte immer einem Objekt zugewiesen werden.
+#   Dies erlaubt es, die genauen Item-Kombinationen anzuschauen
+combinations <- alphaHacker(data, min_items = 3, n_out = 5)
+combinations
+#> # A tibble: 5 × 2
+#>   items            alpha
+#>   <list>           <dbl>
+#> 1 <df [2,800 × 3]> 0.720
+#> 2 <df [2,800 × 4]> 0.719
+#> 3 <df [2,800 × 5]> 0.703
+#> 4 <df [2,800 × 4]> 0.686
+#> 5 <df [2,800 × 3]> 0.652
+
+combinations$items[[1]] |> names()
+#> [1] "A2" "A3" "A5"
 ```
-
-Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen
-angewählt werden muss. Anschliessend wird automatisch aus der
-Rückmeldemappe ein PDF generiert und die PDFs kombiniert und
-zugeschnitten.
-
-HINWEIS! Um Zeit zu sparen, überschreibt die Funktion keine
-existierenden Dokumente.  
-Wenn ein Dokument (z.B. “… Rückmeldemappe.pdf”) neu erstellt werden
-soll, muss die existierende Datei gelöscht werden.
