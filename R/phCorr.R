@@ -11,7 +11,7 @@
 #'
 #' @export
 
-ph_corr <- function(data) {
+phCorr <- function(data) {
 
   phc_selectivity <- data.frame(Item = character(),
                                 Selectivity = numeric())
