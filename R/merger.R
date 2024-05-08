@@ -58,7 +58,10 @@ merger <- function(directory = tcltk::tk_choose.dir()) {
     # Finde docs und drucke zu PDF (falls es nicht bereits existiert)
     if(!any(grep(FILENAMES[1], list.files(client)))) {
       # Bennenne Dokumente
-      doc_in_name <- paste(client, list.files(path = client, pattern = ".docx"), sep = "/")
+      doc_in_name <- paste(client,
+                           list.files(path = client,
+                                      pattern = "\\.docm$|\\.docx$"),
+                           sep = "/")
       doc_out_name <- paste(client,
                             paste(client,
                                   FILENAMES[1],
