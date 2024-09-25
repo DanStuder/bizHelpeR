@@ -1,0 +1,23 @@
+---
+title: "Anleitung GitHub"
+output: html_document
+date: "2024-09-25"
+---
+
+1. Auf GitHub ein Repo erstellen und die URL kopieren
+2. In Posit Cloud ein Projekt erstellen und die Option mit GitHub wählen
+3. URL einfügen
+4. Im Terminal folgenden Code eingeben
+
+```{r}
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+```
+
+5. Code schreiben und Committen
+6. Code pushen
+7. Es erscheint ein Fenster. Hier nochmals den username eingeben
+8. Danach verlangt es nach dem Passwort. Hier NICHT das PW eingeben, sondern...
+9. (Auf GitHub ein Personal Access Token erstellen)[https://github.com/settings/developers]
+10. Dieses als Passwort eingeben.
+Voilà...
