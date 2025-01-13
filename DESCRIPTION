@@ -1,6 +1,6 @@
 Package: bizHelpeR
 Title: Helferfunktionen für BIZleR
-Version: 0.5.2
+Version: 0.5.3
 Authors@R: 
     person("Dan", "Studer", , "dan.studer@be.ch", role = c("aut", "cre"))
 Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für
