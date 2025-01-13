@@ -60,7 +60,7 @@ merger <- function(directory = tcltk::tk_choose.dir()) {
       # Bennenne Dokumente
       doc_in_name <- paste(client,
                            list.files(path = client,
-                                      pattern = "\\.docm$|\\.docx$"),
+                                      pattern = "^[^~]*\\.docm$|^[^~]*\\.docx$"),
                            sep = "/")
       doc_out_name <- paste(client,
                             paste(client,
