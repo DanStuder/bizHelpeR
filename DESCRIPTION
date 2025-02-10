@@ -1,11 +1,12 @@
 Package: bizHelpeR
 Title: Helferfunktionen für BIZleR
-Version: 0.5.3
+Version: 0.5.4
 Authors@R: 
     person("Dan", "Studer", , "dan.studer@be.ch", role = c("aut", "cre"))
 Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für
     die Verwendung in ggplot2. Zudem eine Funktion für die automatische
     Generierung und Kombination verschiedener PDFs der Testergebnisse.
+    Enthalten sind zudem verschiedene Helfer-Funktionen für Analysen des TZ.
 License: MIT + file LICENSE
 URL: https://github.com/DanStuder/bizHelpeR
 BugReports: https://github.com/DanStuder/bizHelpeR/issues

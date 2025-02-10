@@ -6,7 +6,7 @@
 \alias{bizHelpeR-package}
 \title{bizHelpeR: Helferfunktionen für BIZleR}
 \description{
-Beinhaltet die Farben der Corporate Identity der BIZ Bern für die Verwendung in ggplot2. Zudem eine Funktion für die automatische Generierung und Kombination verschiedener PDFs der Testergebnisse.
+Beinhaltet die Farben der Corporate Identity der BIZ Bern für die Verwendung in ggplot2. Zudem eine Funktion für die automatische Generierung und Kombination verschiedener PDFs der Testergebnisse. Enthalten sind zudem verschiedene Helfer-Funktionen für Analysen des TZ.
 }
 \seealso{
 Useful links:

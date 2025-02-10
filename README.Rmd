@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit the [README.Rmd](README.Rmd)-file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -28,8 +28,8 @@ die für die Rückmeldung der Testergebnisse nötig sind.
 Um die aktuelle Version des Packages direkt von [GitHub](https://github.com/) zu installieren, kannst du in R den folgenden Code ausführen:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("DanStuder/bizHelpeR")
+# install.packages("remotes")
+remotes::install_github("DanStuder/bizHelpeR")
 ```
 
 ## `merger()`
