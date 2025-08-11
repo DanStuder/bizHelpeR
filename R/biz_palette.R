@@ -27,11 +27,22 @@ paletti <- list(
     `blaugruen 1` = "#299297",
     `blaugruen 2` = "#007B77",
     `stahlblau` = "#509CB8"
+  ),
+
+  KTBE = c(
+    `aare` = "#3c505a",
+    `sand` = "#ebd3ae",
+    `azur` = "#8cd7f0",
+    `chocolate` = "#644b41",
+    `gray` = "#999999",
+    `oxley` = "#659b7a",
+    `rot` = "#ea161f"
   )
 )
 
 biz_palette <- list(
-  `BIZ` = biz_colors(palette = "BIZ"),
-  `BSB` = biz_colors(palette = "BSB"),
-  `LB`  = biz_colors(palette = "LB")
+  `BIZ`  = biz_colors(palette = "BIZ"),
+  `BSB`  = biz_colors(palette = "BSB"),
+  `LB`   = biz_colors(palette = "LB"),
+  `KTBE` = biz_colors(palette = "KTBE")
 )
