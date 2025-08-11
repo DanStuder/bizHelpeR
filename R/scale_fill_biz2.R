@@ -10,7 +10,7 @@ scale_fill_biz2 <- function(palette = NULL) {
 
   if (is.null(palette)) {palette <- "LB"}
 
-  colors <- bizHelpeR::biz_colors("LB") |>
+  colors <- bizHelpeR::biz_colors(palette) |>
     as.vector()
 
   ggplot2::scale_fill_manual(
