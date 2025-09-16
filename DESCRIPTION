@@ -10,6 +10,7 @@ Description: Beinhaltet die Farben der Corporate Identity der BIZ Bern für
 License: MIT + file LICENSE
 URL: https://github.com/DanStuder/bizHelpeR
 BugReports: https://github.com/DanStuder/bizHelpeR/issues
+Depends: R (>= 4.1.0)
 Imports: 
     doconv,
     dplyr,
