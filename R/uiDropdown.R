@@ -1,71 +1,80 @@
 #' Einfaches Dropdown mit Tcl/Tk
 #'
-#' Zeigt ein modales Dropdown (ttkcombobox) mit vorgegebenen Werten an und speichert
-#' die getroffene Auswahl unter einem angegebenen Variablennamen in der Globalenv.
+#' Zeigt ein modales Dropdown (ttkcombobox) mit vorgegebenen Werten an und gibt
+#' die getroffene Auswahl als Zeichenkette zurück; die Ausführung blockiert,
+#' bis der Dialog geschlossen wird.
 #'
-#' Diese Funktion erstellt ein kleines Tcl/Tk-Fenster mit einer schreibgeschützten
-#' Combobox und einem OK-Button; nach Klick wird der ausgewählte Wert in
-#' `.GlobalEnv` mit dem Namen aus `outputVariable` abgelegt und das Fenster geschlossen.
-#'
-#' @param values Ein Vektor mit Auswahlwerten.
-#' @param title Fenstertitel für das Auswahl-Dialogfenster.
-#' @param outputVariable Zeichenkette mit dem Namen der global zu setzenden Variable.
-#' @param okButton Beschriftung des Bestätigungs-Buttons. Standard ist "OK".
+#' @param values Ein Vektor mit Auswahlwerten; Duplikate werden mit `unique()` entfernt.
+#' @param title Fenstertitel für den Dialog (Standard: "Auswahl").
+#' @param okButton Beschriftung des Bestätigungs-Buttons (Standard: "OK").
+#' @param width Ziel- und Mindestbreite des Fensters in Pixeln (Standard: 300).
+#' @param height Ziel- und Mindesthöhe des Fensters in Pixeln (Standard: 150).
 #'
 #' @details
-#' Voraussetzung ist eine R-Installation mit Tcl/Tk-Unterstützung (`capabilities("tcltk")`).
-#' Das Widget ist schreibgeschützt (`state = "readonly"`) und zeigt die Werte von `values` an.
-#' Die Auswahl wird als Zeichenkette in `.GlobalEnv` gespeichert; das erleichtert einfache Workflows,
-#' ist aber für Paket-APIs weniger empfehlenswert (siehe Value/Since).
+#' Die Funktion erzeugt ein kleines Dialogfenster mit einer schreibgeschützten
+#' Combobox und einem OK-Button; nach Bestätigung wird das Fenster zerstört und
+#' der selektierte Wert zurückgegeben.
+#' Die Größe wird mit `tkwm.minsize()` begrenzt und per `wm geometry` gesetzt;
+#' die Geometrie wird nach dem Initial-Layout via `after idle` angewandt.
+#' Voraussetzung ist eine funktionsfähige Tcl/Tk-Umgebung (`capabilities("tcltk")`).
 #'
 #' @returns
-#' Invisibly `NULL`. Die eigentliche „Rückgabe“ erfolgt als Seiteneffekt, indem
-#' `outputVariable` in `.GlobalEnv` gesetzt wird.
-#'
-#' @section Seiteneffekte:
-#' Setzt `assign(outputVariable, auswahl, envir = .GlobalEnv)` und zerstört das Dialogfenster via `tkdestroy()`.
+#' Ein String mit dem ausgewählten Wert; bei Abbruch (Fensterkreuz) `NULL` (invisible).
 #'
 #' @examples
 #' \dontrun{
-#' # Minimalbeispiel
-#' uiDropdown(values = LETTERS[1:5],
-#'            title = "Wähle einen Buchstaben",
-#'            outputVariable = "buchstabe")
-#' buchstabe  # ausgewählte Option als Zeichenkette
+#' wahl <- uiDropdown(LETTERS[1:5], title = "Wähle eine Person")
+#' if (!is.null(wahl)) message("Gewählt: ", wahl)
 #'
-#' # Mit Daten aus einer Spalte:
-#' df <- data.frame(kat = c("A","B","A","C"))
-#' uiDropdown(values = df$kat,
-#'            title = "Kategorie wählen",
-#'            outputVariable = "kat_auswahl")
-#' subset_df <- subset(df, kat == kat_auswahl)
+#' # Eigene Größe:
+#' wahl2 <- uiDropdown(month.name, title = "Monat", width = 420, height = 220)
 #' }
 #'
-#'
-#' @importFrom tcltk tktoplevel tkwm.title tclVar ttkcombobox tkpack tclvalue tkbutton tkdestroy tkwm.geomety
+#' @importFrom tcltk tktoplevel tkwm.title tclVar ttkcombobox tkpack tcl tkbutton tkbind tkwait.window tkwm.minsize tkdestroy
 #' @export
-uiDropdown <- function(values, title, outputVariable, okButton = "OK",
-                       width = NULL, height = NULL,
-                       minwidth = NULL, minheight = NULL) {
 
-  if (is.null(minwidth)) minwidth = 300
-  if (is.null(minheight)) minheight = 150
+uiDropdown <- function(values,
+                       title = "Auswahl",
+                       okButton = "OK",
+                       width = 300,
+                       height = 150) {
 
   tt <- tktoplevel()
   tkwm.title(tt, title)
+
   vals <- unique(values)
-  v <- tclVar(vals[1])
-  cb <- ttkcombobox(tt, textvariable = v, values = vals, state = "readonly")
+  sel_var  <- tclVar(vals[1])   # aktuelle Auswahl
+  done_var <- tclVar("0")       # "0"=warte, "1"=OK, "cancel"=abgebrochen
+
+  cb <- ttkcombobox(tt, textvariable = sel_var, values = vals, state = "readonly")
   tkpack(cb, padx = 12, pady = 12, fill = "x")
 
-  tkbutton(tt, text = okButton, command = function() {
-    auswahl <- tclvalue(v)
-    assign(outputVariable, auswahl, envir = .GlobalEnv)
+  ok_cmd <- function() {
+    tclvalue(done_var) <- "1"
     tkdestroy(tt)
-  }) |> tkpack(pady = 8)
+  }
+  tkbutton(tt, text = okButton, command = ok_cmd) |> tkpack(pady = 8)
 
-  tkwm.minsize(tt, as.integer(minwidth), as.integer(minheight))
-  tcl("after", "idle", function() tkwm.geometry(tt, sprintf("%dx%d", width, height)))
+  # Mindest- und Zielgröße setzen
+  tkwm.minsize(tt, as.integer(width), as.integer(height))
+  tcl("after","idle", function() tkwm.geometry(tt, sprintf("%dx%d", width, height)))
 
-  invisible(NULL)
+  # Optional modal/fokus:
+  # tkfocus(tt); tkgrab.set(tt)
+
+  # Schließen über Fensterkreuz: als "cancel" markieren
+  tkbind(tt, "<Destroy>", function() {
+    if (as.character(tclvalue(done_var)) != "1") tclvalue(done_var) <- "cancel"
+  })
+
+  # Blockierend warten bis Fenster zerstört
+  tkwait.window(tt)
+
+  status <- as.character(tclvalue(done_var))
+  if (identical(status, "1")) {
+    return(as.character(tclvalue(sel_var)))
+  } else {
+    return(invisible(NULL))
+  }
 }
+
