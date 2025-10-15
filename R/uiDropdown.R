@@ -42,20 +42,30 @@
 #' }
 #'
 #'
-#' @importFrom tcltk tktoplevel tkwm.title tclVar ttkcombobox tkpack tclvalue tkbutton tkdestroy
+#' @importFrom tcltk tktoplevel tkwm.title tclVar ttkcombobox tkpack tclvalue tkbutton tkdestroy tkwm.geomety
 #' @export
-uiDropdown <- function(values, title, outputVariable, okButton = "OK") {
+uiDropdown <- function(values, title, outputVariable, okButton = "OK",
+                       width = NULL, height = NULL,
+                       minwidth = NULL, minheight = NULL) {
+
+  if (is.null(minwidth)) minwidth = 300
+  if (is.null(minheight)) minheight = 150
+
   tt <- tktoplevel()
   tkwm.title(tt, title)
-  v <- tclVar(values[1])
-  cb <- ttkcombobox(tt, textvariable = v, values = values, state = "readonly")
-  tkpack(cb, padx = 10, pady = 10)
+  vals <- unique(values)
+  v <- tclVar(vals[1])
+  cb <- ttkcombobox(tt, textvariable = v, values = vals, state = "readonly")
+  tkpack(cb, padx = 12, pady = 12, fill = "x")
 
   tkbutton(tt, text = okButton, command = function() {
     auswahl <- tclvalue(v)
     assign(outputVariable, auswahl, envir = .GlobalEnv)
     tkdestroy(tt)
-  }) |> tkpack(pady = 5)
+  }) |> tkpack(pady = 8)
+
+  tkwm.minsize(tt, as.integer(minwidth), as.integer(minheight))
+  tcl("after", "idle", function() tkwm.geometry(tt, sprintf("%dx%d", width, height)))
 
   invisible(NULL)
 }
