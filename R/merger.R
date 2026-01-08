@@ -3,7 +3,6 @@
 #' @param directory Ordner, für den die Dateien erstellt werden sollen
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
-#' @importFrom doconv docx2pdf
 #' @importFrom pdftools pdf_text
 #' @importFrom qpdf pdf_combine pdf_length pdf_subset
 #' @importFrom stringi stri_detect_regex
@@ -113,8 +112,7 @@ merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALSE) {
       # Falls das File existiert (und richtig benannt wurde), dann erstelle es als PDF
       if(file.exists(doc_in_name)) {
         # Konversion
-        doconv::docx2pdf(input = doc_in_name,
-                         output = doc_out_name)
+        word2pdf(doc_in_name)
         if(umlaute) {
           # Name zurück zu Umlauten
           file.rename(from = doc_in_name,                ## Word-file
