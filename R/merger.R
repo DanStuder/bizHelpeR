@@ -56,7 +56,8 @@ merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALSE) {
 
     # Testen, ob IST 5 enthalten und Konfidenzintervall aktiviert ist
     ## Inhalt der Ergebnisse lesen
-    ergebnisse_inhalt <- paste0(client, FILENAMES[2], sep = "/") |>
+    ergebnisse_inhalt <- paste(client, client, sep = "/") |>
+      paste(FILENAMES[2], sep = "_") |>
       pdftools::pdf_text() |>
       stringr::str_split(pattern = "\n") |>
       unlist()
