@@ -7,12 +7,12 @@
 #' @importFrom pdftools pdf_text
 #' @importFrom qpdf pdf_combine pdf_length pdf_subset
 #' @importFrom stringi stri_detect_regex
-#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_detect str_replace_all str_split
 #' @importFrom tcltk tk_choose.dir
 #' @export
 
 
-merger <- function(directory = tcltk::tk_choose.dir()) {
+merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALSE) {
 
   # Setze Directory (User kann im Browser anwählen)
   setwd(directory)
@@ -54,6 +54,23 @@ merger <- function(directory = tcltk::tk_choose.dir()) {
       new_name <- paste(client, gsub(" ", "_", file), sep = "/")
       file.rename(from = old_name, to = new_name)
     }
+
+    # Testen, ob IST 5 enthalten und Konfidenzintervall aktiviert ist
+    ## Inhalt der Ergebnisse lesen
+    ergebnisse_inhalt <- paste0(client, FILENAMES[2], sep = "/") |>
+      pdftools::pdf_text() |>
+      stringr::str_split(pattern = "\n") |>
+      unlist()
+    ## Prüfen ob IST 5 enthalten ist
+    contains_ist5 <- ergebnisse_inhalt |>
+      stringr::str_detect("Intelligenz-Struktur-Test 5") |>
+      any()
+    ## Prüfen ob Konfidenzintervalle angegeben werden
+    has_ci <- ergebnisse_inhalt |>
+      stringr::str_detect("Vertrauensintervall \\(Basis: Konsistenz, Wahrscheinlichkeit: (95%|90%)\\)") |>
+      any()
+    ## Wenn IST 5, aber keine KI (und kein Override), dann User warnen
+    if (contains_ist5 & !has_ci & !ist_override) {warning(paste("Bei Klient/in", client, "wurde der IST 5 in den Ergebnissen erkannt, aber keine Vertrauensintervalle. Bitte gehe im HTS auf den IST der Person > Report > beim Profil im Dropdown 'Konfidenzintervall' anwählen.\nFalls diese Warnung fehlerhaft ist, bitte im Funktionsaufruf das Argument `ist_override` auf `TRUE` setzen."))}
 
     # Finde docs und drucke zu PDF (falls es nicht bereits existiert)
     if(!any(grep(FILENAMES[1], list.files(client)))) {
@@ -147,30 +164,31 @@ merger <- function(directory = tcltk::tk_choose.dir()) {
                                     sep = "/"),
                               "Fragebogen_neu.pdf")
 
+      ### Bereich auskommentiert, weil alles digital heute
       # Der physische Fragebogen hat genau 5 Seiten. Wenn das PDF 6 Seiten hat,
       #   dann liegt das daran, dass im Scan noch eine leere Seite drin ist,
       #   die abgeschnitten werden kann.
       #   Wenn das PDF noch länger ist als 6 Seiten, dann handelt es sich um die digitale Version,
       #   bei der ebenfalls einige Seiten abgeschnitten werden müssen.
-      fb_actual_length <- qpdf::pdf_length(input = fragebogen_in)
-
-      if(fb_actual_length == 2*ceiling(FB_LENGTH/2)) {
-        qpdf::pdf_subset(input = fragebogen_in,
-                         pages = 1:FB_LENGTH,
-                         output = fragebogen_out)
-        file.rename(from = fragebogen_out,
-                    to = fragebogen_in)
-      } else if (fb_actual_length > 2*ceiling(FB_LENGTH/2)) {
-        text <- fragebogen_in |>
-          pdftools::pdf_text() |>
-          stringr::str_replace_all("\\s", "") # Extrahiert den Text pro Seite
-
-        qpdf::pdf_subset(input = fragebogen_in,
-                         pages = nchar(text) != 0, # wähle alle Seiten, auf denen etwas steht
-                         output = fragebogen_out)
-        file.rename(from = fragebogen_out,
-                    to = fragebogen_in)
-      }
+      # fb_actual_length <- qpdf::pdf_length(input = fragebogen_in)
+      #
+      # if(fb_actual_length == 2*ceiling(FB_LENGTH/2)) {
+      #   qpdf::pdf_subset(input = fragebogen_in,
+      #                    pages = 1:FB_LENGTH,
+      #                    output = fragebogen_out)
+      #   file.rename(from = fragebogen_out,
+      #               to = fragebogen_in)
+      # } else if (fb_actual_length > 2*ceiling(FB_LENGTH/2)) {
+      #   text <- fragebogen_in |>
+      #     pdftools::pdf_text() |>
+      #     stringr::str_replace_all("\\s", "") # Extrahiert den Text pro Seite
+      #
+      #   qpdf::pdf_subset(input = fragebogen_in,
+      #                    pages = nchar(text) != 0, # wähle alle Seiten, auf denen etwas steht
+      #                    output = fragebogen_out)
+      #   file.rename(from = fragebogen_out,
+      #               to = fragebogen_in)
+      # }
 
       raw_clean <- paste(paste(client, client, sep = "/"), FILENAMES[3], sep = "_")
       raw_temp <- paste(paste(client, client, sep = "/"),"temp", FILENAMES[3], sep = "_")

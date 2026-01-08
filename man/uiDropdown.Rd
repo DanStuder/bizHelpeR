@@ -4,55 +4,48 @@
 \alias{uiDropdown}
 \title{Einfaches Dropdown mit Tcl/Tk}
 \usage{
-uiDropdown(values, title, outputVariable, okButton = "OK")
+uiDropdown(
+  values,
+  title = "Auswahl",
+  okButton = "OK",
+  width = 300,
+  height = 150
+)
 }
 \arguments{
-\item{values}{Ein Vektor mit Auswahlwerten.}
+\item{values}{Ein Vektor mit Auswahlwerten; Duplikate werden mit \code{unique()} entfernt.}
 
-\item{title}{Fenstertitel für das Auswahl-Dialogfenster.}
+\item{title}{Fenstertitel für den Dialog (Standard: "Auswahl").}
 
-\item{outputVariable}{Zeichenkette mit dem Namen der global zu setzenden Variable.}
+\item{okButton}{Beschriftung des Bestätigungs-Buttons (Standard: "OK").}
 
-\item{okButton}{Beschriftung des Bestätigungs-Buttons. Standard ist "OK".}
+\item{width}{Ziel- und Mindestbreite des Fensters in Pixeln (Standard: 300).}
+
+\item{height}{Ziel- und Mindesthöhe des Fensters in Pixeln (Standard: 150).}
 }
 \value{
-Invisibly \code{NULL}. Die eigentliche „Rückgabe“ erfolgt als Seiteneffekt, indem
-\code{outputVariable} in \code{.GlobalEnv} gesetzt wird.
+Ein String mit dem ausgewählten Wert; bei Abbruch (Fensterkreuz) \code{NULL} (invisible).
 }
 \description{
-Zeigt ein modales Dropdown (ttkcombobox) mit vorgegebenen Werten an und speichert
-die getroffene Auswahl unter einem angegebenen Variablennamen in der Globalenv.
+Zeigt ein modales Dropdown (ttkcombobox) mit vorgegebenen Werten an und gibt
+die getroffene Auswahl als Zeichenkette zurück; die Ausführung blockiert,
+bis der Dialog geschlossen wird.
 }
 \details{
-Diese Funktion erstellt ein kleines Tcl/Tk-Fenster mit einer schreibgeschützten
-Combobox und einem OK-Button; nach Klick wird der ausgewählte Wert in
-\code{.GlobalEnv} mit dem Namen aus \code{outputVariable} abgelegt und das Fenster geschlossen.
-
-Voraussetzung ist eine R-Installation mit Tcl/Tk-Unterstützung (\code{capabilities("tcltk")}).
-Das Widget ist schreibgeschützt (\code{state = "readonly"}) und zeigt die Werte von \code{values} an.
-Die Auswahl wird als Zeichenkette in \code{.GlobalEnv} gespeichert; das erleichtert einfache Workflows,
-ist aber für Paket-APIs weniger empfehlenswert (siehe Value/Since).
+Die Funktion erzeugt ein kleines Dialogfenster mit einer schreibgeschützten
+Combobox und einem OK-Button; nach Bestätigung wird das Fenster zerstört und
+der selektierte Wert zurückgegeben.
+Die Größe wird mit \code{tkwm.minsize()} begrenzt und per \verb{wm geometry} gesetzt;
+die Geometrie wird nach dem Initial-Layout via \verb{after idle} angewandt.
+Voraussetzung ist eine funktionsfähige Tcl/Tk-Umgebung (\code{capabilities("tcltk")}).
 }
-\section{Seiteneffekte}{
-
-Setzt \code{assign(outputVariable, auswahl, envir = .GlobalEnv)} und zerstört das Dialogfenster via \code{tkdestroy()}.
-}
-
 \examples{
 \dontrun{
-# Minimalbeispiel
-uiDropdown(values = LETTERS[1:5],
-           title = "Wähle einen Buchstaben",
-           outputVariable = "buchstabe")
-buchstabe  # ausgewählte Option als Zeichenkette
+wahl <- uiDropdown(LETTERS[1:5], title = "Wähle eine Person")
+if (!is.null(wahl)) message("Gewählt: ", wahl)
 
-# Mit Daten aus einer Spalte:
-df <- data.frame(kat = c("A","B","A","C"))
-uiDropdown(values = df$kat,
-           title = "Kategorie wählen",
-           outputVariable = "kat_auswahl")
-subset_df <- subset(df, kat == kat_auswahl)
+# Eigene Größe:
+wahl2 <- uiDropdown(month.name, title = "Monat", width = 420, height = 220)
 }
-
 
 }

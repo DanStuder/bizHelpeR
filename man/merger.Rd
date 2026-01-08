@@ -4,7 +4,7 @@
 \alias{merger}
 \title{merger}
 \usage{
-merger(directory = tcltk::tk_choose.dir())
+merger(directory = tcltk::tk_choose.dir(), ist_override = FALSE)
 }
 \arguments{
 \item{directory}{Ordner, für den die Dateien erstellt werden sollen}
