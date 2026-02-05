@@ -2,7 +2,7 @@
 #'
 #' Konvertiert .docx/.docm zu PDF. Benötigt PDF-XChange Tools installiert.
 #'
-#' @param input Pfad zu einer oder mehreren zu konvertierenden Dateien
+#' @param inputs Pfad zu einer oder mehreren zu konvertierenden Dateien
 #' @seealso [PDF-Tools V10 CLI-Dokumentation](https://help.pdf-xchange.com/pdfxt10/)
 #' @export
 dodgy_word2pdf <- function(inputs) {

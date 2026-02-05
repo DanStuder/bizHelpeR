@@ -1,6 +1,7 @@
 #' dodgy merger
 #'
 #' @param directory Ordner, für den die Dateien erstellt werden sollen
+#' @param ist_override Schaltet Warnung zum IST 5 stumm
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
 # #' @importFrom pdftools pdf_text
@@ -46,7 +47,8 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
   ## PDF in .txt konvertieren
   pdf2txt <- function(pdf_in) {
     pdfxt_exe <- "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe"
-    settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
+    settings <- normalizePath(system.file("extdata", "settings.pdtex", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
+    # settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
 
     if (!file.exists(pdfxt_exe)) stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
     if (!file.exists(settings))  stop("settings.pdtex nicht gefunden: ", settings)
@@ -57,7 +59,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
       "/RunTool:showui=no;showprog=no;showrep=no", "pdfToTXT", pdf_in
     )
 
-    # Auf Windows: args einzeln quoten, damit Spaces/UNC sicher sind. [web:124]
+    # Auf Windows: args einzeln quoten, damit Spaces/UNC sicher sind.
     out <- system2(command = pdfxt_exe,
                    args = shQuote(args, type = "cmd"),
                    stdout = TRUE,
@@ -73,7 +75,8 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
                        pdf_out = NULL,
                        overwrite = TRUE) {
     pdfxt_exe <- "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe"
-    settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
+    # settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
+    settings <- normalizePath(system.file("extdata", "settings.pdtex", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
 
     if (!file.exists(pdfxt_exe)) stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
     if (!file.exists(settings))  stop("settings.pdtex nicht gefunden: ", settings)
@@ -128,6 +131,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
     # Ordner, wo deine verschiedenen settings liegen:
     settings_dir <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger"
+    settings_dir <- normalizePath(system.file("extdata", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
 
     # Neue Fälle hinzufügen
     # Leider kann man die zu extrahierenden Seiten nicht über die CLI direkt steuern

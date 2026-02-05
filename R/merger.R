@@ -1,6 +1,7 @@
 #' merger
 #'
 #' @param directory Ordner, für den die Dateien erstellt werden sollen
+#' @param ist_override Schaltet Warnung zum IST 5 stumm
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
 #' @importFrom pdftools pdf_text
