@@ -18,10 +18,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`bizHelpeR` enthält verschiedene Helferfunktionen für BIZleRinnen und BIZleR.  
+`bizHelpeR` enthält verschiedene Helferfunktionen.  
 Das sind einerseits die Farben des aktuellen CI/CD sowie einige Funktionen für den einfachen Einsatz in `ggplot2`.  
-Zudem hilft `merger()` bei der schnelleren Erstellung der Rückmeldemappe und der Kombination der verschiedenen PDFs,
-die für die Rückmeldung der Testergebnisse nötig sind.
+Zudem hilft `merger()` bzw. `dodgy_merger()` bei der schnelleren Erstellung der Rückmeldemappe und der Kombination der verschiedenen PDFs, die für die Rückmeldung der Testergebnisse nötig sind.
 
 ## Installation
 
@@ -32,7 +31,9 @@ Um die aktuelle Version des Packages direkt von [GitHub](https://github.com/) zu
 remotes::install_github("DanStuder/bizHelpeR")
 ```
 
-## `merger()`
+## `merger()` und `dodgy_merger()`
+
+_Hinweis: Die Funktionen machen genau das Gleiche, aber verwenden andere Mechanismen zum Konvertieren von Word zu PDF und zur Bearbeitung von PDF-Dateien. `dodgy_merger()` simuliert Tastaturanschläge, was etwas [dodgy](https://www.merriam-webster.com/dictionary/dodgy) ist, aber im Gegensatz zu den Funktionen aus `merger()` aktuell funktioniert._
 
 Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig:  
 - Ein Ordner mit dem Namen des Moduls (z.B. "A")  
@@ -41,17 +42,19 @@ Damit die Funktion eingesetzt werden kann, ist folgender Aufbau nötig:
   a) Rückmeldemappe als Word im Format "Vorname Nachname Mappe.docx"  
   b) PDF mit den Ergebnissen im Format "Vorname Nachname Ergebnisse.pdf"  
   c) PDF mit den Rohdaten im Format "Vorname Nachname Rohdaten.pdf"  
+  d) Evtl. Fragebogen im Format "Vorname Nachname Fragebogen.pdf" 
+  e) Evtl. Q-Level. Dieses Dokument muss nicht umbenannt werden, sondern kann direkt aus der Mail-Nachricht per Drag-and-Drop in den Personen-Ordner gezogen werden.
 
-Falls es sich um Modul "B" handelt, muss zusätzlich der Fragebogen im Format "Vorname Nachname Fragebogen.pdf" abgelegt werden.  
-Zudem kann der Q-Level im Personen-Ordner abgelegt werden. Dieses Dokument muss nicht umbenannt werden, sondern kann direkt aus der Mail-Nachricht per Drag-and-Drop in den Personen-Ordner gezogen werden.
-
-Ist diese Struktur für jede Person gegeben, wird die Funktion aufgerufen:  
+Ist diese Struktur für jede Person gegeben, zuerst R öffnen. Für einen schnelleren Start empfiehlt es sich, direkt die R-GUI zu verwenden, anstatt RStudio. 
 
 ```{r, eval = FALSE}
 bizHelpeR::merger()
+# bzw.
+bizHelpeR::dodgy_merger()
 ```
 
-Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen angewählt werden muss. 
+Es öffnet sich ein Fenster, in welchem der Ordner mit dem Modulnamen angewählt werden muss. **Achtung: Beim `dodgy_merger()` darf nach dieser Auswahl keine Aktion durch den User gemacht werden! Die Funktion kopiert einen Befehl in das Terminal, eine Interaktion kann dazu führen, dass hier ein Fehler auftritt. Sobald das Terminal durch die Funktion wieder geschlossen wird, läuft die Funktion wieder im Hintergrund und du kannst normal weiterarbeiten.**
+
 Anschliessend wird automatisch aus der Rückmeldemappe ein PDF generiert und die PDFs kombiniert und zugeschnitten.
 
 HINWEIS! Um Zeit zu sparen, überschreibt die Funktion keine existierenden Dokumente.  
