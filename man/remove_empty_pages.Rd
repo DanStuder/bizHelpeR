@@ -6,14 +6,6 @@
 \usage{
 remove_empty_pages(input, output)
 }
-\arguments{
-\item{input}{Name des Input-PDFs}
-
-\item{output}{Name des Output-PDFs}
-}
-\value{
-Gibt den Pfad des Output-PDFs an
-}
 \description{
 Diese Funktion findet und entfernt leere Seiten in einem PDF-Dokument.
 Dieser Prozess funktioniert aber nur für Dokumente mit Text;

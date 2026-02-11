@@ -4,12 +4,16 @@
 #' Dieser Prozess funktioniert aber nur für Dokumente mit Text;
 #' d.h. Bilder werden nicht erkannt.
 #'
-#' @param input Name des Input-PDFs
-#' @param output Name des Output-PDFs
-#'
-#' @return Gibt den Pfad des Output-PDFs an
-#' @export
-
+# @param input Name des Input-PDFs
+# @param output Name des Output-PDFs
+#
+# @return Gibt den Pfad des Output-PDFs an
+# @export
+# Funktion wird aktuell nicht exportiert, da sie gerade nicht verwendet wird
+# und weil die dependencies (pdftools) auf Posit Cloud nicht installierbar sind.
+# Wenn die Funktion in Zukunft wieder so verwendet werden soll, dann einfach
+# bei den Zeilen 7-11 wieder ein Apostoph einfügen. Dann in der DESCRIPTION
+# die dependencies wieder hinzufügen
 
 remove_empty_pages <- function(input, output) {
 

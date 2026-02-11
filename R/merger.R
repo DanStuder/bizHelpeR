@@ -4,12 +4,18 @@
 #' @param ist_override Schaltet Warnung zum IST 5 stumm
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
-#' @importFrom pdftools pdf_text
-#' @importFrom qpdf pdf_combine pdf_length pdf_subset
-#' @importFrom stringi stri_detect_regex
-#' @importFrom stringr str_detect str_replace_all str_split
-#' @importFrom tcltk tk_choose.dir
-#' @export
+# @importFrom pdftools pdf_text
+# @importFrom qpdf pdf_combine pdf_length pdf_subset
+# @importFrom stringi stri_detect_regex
+# @importFrom stringr str_detect str_replace_all str_split
+# @importFrom tcltk tk_choose.dir
+
+# @export
+# Funktion wird aktuell nicht exportiert, da sie gerade nicht verwendet wird
+# und weil die dependencies (pdftools) auf Posit Cloud nicht installierbar sind.
+# Wenn die Funktion in Zukunft wieder so verwendet werden soll, dann einfach
+# bei den Zeilen 7-13 wieder ein Apostoph einfügen. Dann in der DESCRIPTION
+# die dependencies wieder hinzufügen
 
 
 merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALSE) {
