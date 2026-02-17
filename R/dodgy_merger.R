@@ -2,6 +2,7 @@
 #'
 #' @param directory Ordner, für den die Dateien erstellt werden sollen
 #' @param ist_override Schaltet Warnung zum IST 5 stumm
+#' @param timeout Wie lange gewartet werden soll auf den Merger
 #'
 #' @return Erstellt ein PDF aus dem Word-Dokument der Mappe und kombiniert und schneidet die anderen PDF-Dateien
 # #' @importFrom pdftools pdf_text
@@ -13,15 +14,22 @@
 #' @importFrom tcltk tk_choose.dir
 #' @export
 
-
-dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALSE) {
-
+dodgy_merger <- function(
+  directory = tcltk::tk_choose.dir(),
+  ist_override = FALSE,
+  timeout = 300
+) {
   # Dokumentation der PDF-XChange Tools CLI:
   # https://help.pdf-xchange.com/pdfxt10/
 
   # Helferfunktionen
   ## Warten, bis alle PDFs konvertiert sind
-  wait_for_files_stable <- function(paths, timeout = 180, poll = 0.5, stable_n = 3) {
+  wait_for_files_stable <- function(
+    paths,
+    timeout = timeout,
+    poll = 0.5,
+    stable_n = 3
+  ) {
     t0 <- Sys.time()
     ok_counts <- setNames(rep(0L, length(paths)), paths)
     last_size <- setNames(rep(NA_real_, length(paths)), paths)
@@ -47,23 +55,38 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
   ## PDF in .txt konvertieren
   pdf2txt <- function(pdf_in) {
     pdfxt_exe <- "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe"
-    settings <- normalizePath(system.file("extdata", "settings.pdtex", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
+    settings <- normalizePath(
+      system.file("extdata", "settings.pdtex", package = "bizHelpeR"),
+      winslash = "\\",
+      mustWork = TRUE
+    )
     # settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
 
-    if (!file.exists(pdfxt_exe)) stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
-    if (!file.exists(settings))  stop("settings.pdtex nicht gefunden: ", settings)
-    if (!file.exists(pdf_in))    stop("PDF nicht gefunden: ", pdf_in)
+    if (!file.exists(pdfxt_exe)) {
+      stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
+    }
+    if (!file.exists(settings)) {
+      stop("settings.pdtex nicht gefunden: ", settings)
+    }
+    if (!file.exists(pdf_in)) {
+      stop("PDF nicht gefunden: ", pdf_in)
+    }
 
     args <- c(
-      "/ImportTools", settings,
-      "/RunTool:showui=no;showprog=no;showrep=no", "pdfToTXT", pdf_in
+      "/ImportTools",
+      settings,
+      "/RunTool:showui=no;showprog=no;showrep=no",
+      "pdfToTXT",
+      pdf_in
     )
 
     # Auf Windows: args einzeln quoten, damit Spaces/UNC sicher sind.
-    out <- system2(command = pdfxt_exe,
-                   args = shQuote(args, type = "cmd"),
-                   stdout = TRUE,
-                   stderr = TRUE)
+    out <- system2(
+      command = pdfxt_exe,
+      args = shQuote(args, type = "cmd"),
+      stdout = TRUE,
+      stderr = TRUE
+    )
 
     invisible(out)
   }
@@ -71,48 +94,66 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
   ## PDFs zusammenfügen
   # "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe" /ImportTools "\\MBA.erz.be.ch\DATA-MBA\UserHomes\mp5c\Z_Systems\RedirectedFolders\Desktop\Projekte\Merger\settings.pdtex" /RunTool:showui=no;showprog=no;showrep=no;showprompt=no splitMergePDF "\\MBA.erz.be.ch\DATA-MBA\UserHomes\mp5c\Z_Systems\RedirectedFolders\Desktop\Projekte\Merger\A\Crystal Paglialonga\Crystal Paglialonga Ergebnisse.pdf" "\\MBA.erz.be.ch\DATA-MBA\UserHomes\mp5c\Z_Systems\RedirectedFolders\Desktop\Projekte\Merger\A\Crystal Paglialonga\Crystal Paglialonga Rohdaten.pdf" /Output:folder="\\MBA.erz.be.ch\DATA-MBA\UserHomes\mp5c\Z_Systems\RedirectedFolders\Desktop\Projekte\Merger\A\Crystal Paglialonga";filename="Crystal Paglialonga full.pdf";overwrite=yes;showfiles=no
 
-  pdfMerge <- function(pdf_in,
-                       pdf_out = NULL,
-                       overwrite = TRUE) {
+  pdfMerge <- function(pdf_in, pdf_out = NULL, overwrite = TRUE) {
     pdfxt_exe <- "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe"
     # settings  <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger\\settings.pdtex"
-    settings <- normalizePath(system.file("extdata", "settings.pdtex", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
+    settings <- normalizePath(
+      system.file("extdata", "settings.pdtex", package = "bizHelpeR"),
+      winslash = "\\",
+      mustWork = TRUE
+    )
 
-    if (!file.exists(pdfxt_exe)) stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
-    if (!file.exists(settings))  stop("settings.pdtex nicht gefunden: ", settings)
+    if (!file.exists(pdfxt_exe)) {
+      stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
+    }
+    if (!file.exists(settings)) {
+      stop("settings.pdtex nicht gefunden: ", settings)
+    }
 
-    if (length(pdf_in) < 2) stop("Bitte mindestens 2 PDFs angeben.")
+    if (length(pdf_in) < 2) {
+      stop("Bitte mindestens 2 PDFs angeben.")
+    }
     if (!all(file.exists(pdf_in))) {
       missing <- pdf_in[!file.exists(pdf_in)]
-      stop("Folgende PDFs wurden nicht gefunden:\n", paste(missing, collapse = "\n"))
+      stop(
+        "Folgende PDFs wurden nicht gefunden:\n",
+        paste(missing, collapse = "\n")
+      )
     }
 
     # Default: überschreibe das erste PDF
-    if (is.null(pdf_out)) pdf_out <- pdf_in[[1]]
+    if (is.null(pdf_out)) {
+      pdf_out <- pdf_in[[1]]
+    }
 
     out_folder <- dirname(pdf_out)
-    out_name   <- basename(pdf_out)  # output wird durch folder + filename definiert [web:191]
+    out_name <- basename(pdf_out) # output wird durch folder + filename definiert [web:191]
     dir.create(out_folder, recursive = TRUE, showWarnings = FALSE)
 
     output_opt <- paste0(
-      "/Output:folder=", shQuote(out_folder, type = "cmd"),
-      ";filename=", shQuote(out_name, type = "cmd"),
-      ";overwrite=", if (isTRUE(overwrite)) "yes" else "no",
+      "/Output:folder=",
+      shQuote(out_folder, type = "cmd"),
+      ";filename=",
+      shQuote(out_name, type = "cmd"),
+      ";overwrite=",
+      if (isTRUE(overwrite)) "yes" else "no",
       ";showfiles=no"
     )
 
     args <- c(
-      "/ImportTools", settings,
-      "/RunTool:showui=no;showprog=no;showrep=no;showprompt=no", "splitMergePDF",
+      "/ImportTools",
+      settings,
+      "/RunTool:showui=no;showprog=no;showrep=no;showprompt=no",
+      "splitMergePDF",
       pdf_in,
       output_opt
     )
 
     out <- system2(
       command = pdfxt_exe,
-      args    = shQuote(args, type = "cmd"),
-      stdout  = TRUE,
-      stderr  = TRUE
+      args = shQuote(args, type = "cmd"),
+      stdout = TRUE,
+      stderr = TRUE
     )
 
     invisible(list(
@@ -121,9 +162,11 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
     ))
   }
 
-  pdfExtract <- function(pdf_in,
-                         pages_case = c("p1", "p2", "p1-2", "p2-end", "p3-end"),
-                         pdf_out = NULL) {
+  pdfExtract <- function(
+    pdf_in,
+    pages_case = c("p1", "p2", "p1-2", "p2-end", "p3-end"),
+    pdf_out = NULL
+  ) {
     pdfxt_exe <- "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe"
     tool_id = "extractPages"
 
@@ -131,7 +174,11 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
     # Ordner, wo deine verschiedenen settings liegen:
     settings_dir <- "\\\\MBA.erz.be.ch\\DATA-MBA\\UserHomes\\mp5c\\Z_Systems\\RedirectedFolders\\Desktop\\Projekte\\Merger"
-    settings_dir <- normalizePath(system.file("extdata", package = "bizHelpeR"), winslash = "\\", mustWork = TRUE)
+    settings_dir <- normalizePath(
+      system.file("extdata", package = "bizHelpeR"),
+      winslash = "\\",
+      mustWork = TRUE
+    )
 
     # Neue Fälle hinzufügen
     # Leider kann man die zu extrahierenden Seiten nicht über die CLI direkt steuern
@@ -141,51 +188,75 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
     # "C:/Program Files/Tracker Software/PDF Tools/PDFXTools.exe" /ExportTools "\\MBA.erz.be.ch\DATA-MBA\UserHomes\mp5c\Z_Systems\RedirectedFolders\Desktop\Projekte\Merger\settings_p3-end.pdtex"
 
     settings_map <- c(
-      "p1"    = "settings_p1.pdtex",
-      "p2"    = "settings_p2.pdtex",
-      "p1-2"  = "settings_p1-2.pdtex",
-      "p2-end"= "settings_p2-end.pdtex",
-      "p3-end"= "settings_p3-end.pdtex"
+      "p1" = "settings_p1.pdtex",
+      "p2" = "settings_p2.pdtex",
+      "p1-2" = "settings_p1-2.pdtex",
+      "p2-end" = "settings_p2-end.pdtex",
+      "p3-end" = "settings_p3-end.pdtex"
     )
 
     settings <- file.path(settings_dir, unname(settings_map[[pages_case]]))
 
-    if (!file.exists(pdfxt_exe)) stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
-    if (!file.exists(settings))  stop("settings.pdtex nicht gefunden für case '", pages_case, "': ", settings)
-    if (!file.exists(pdf_in))    stop("PDF nicht gefunden: ", pdf_in)
+    if (!file.exists(pdfxt_exe)) {
+      stop("PDFXTools.exe nicht gefunden: ", pdfxt_exe)
+    }
+    if (!file.exists(settings)) {
+      stop(
+        "settings.pdtex nicht gefunden für case '",
+        pages_case,
+        "': ",
+        settings
+      )
+    }
+    if (!file.exists(pdf_in)) {
+      stop("PDF nicht gefunden: ", pdf_in)
+    }
 
     if (is.null(pdf_out)) {
       pdf_out <- file.path(
         dirname(pdf_in),
-        paste0(tools::file_path_sans_ext(basename(pdf_in)), " (", pages_case, ").pdf")
+        paste0(
+          tools::file_path_sans_ext(basename(pdf_in)),
+          " (",
+          pages_case,
+          ").pdf"
+        )
       )
     }
 
     out_folder <- dirname(pdf_out)
-    out_name   <- basename(pdf_out)  # basename/dirname wie in base R dokumentiert [web:191]
+    out_name <- basename(pdf_out) # basename/dirname wie in base R dokumentiert [web:191]
     dir.create(out_folder, recursive = TRUE, showWarnings = FALSE)
 
     output_opt <- paste0(
-      "/Output:folder=", shQuote(out_folder, type = "cmd"),
-      ";filename=", shQuote(out_name, type = "cmd"),
+      "/Output:folder=",
+      shQuote(out_folder, type = "cmd"),
+      ";filename=",
+      shQuote(out_name, type = "cmd"),
       ";overwrite=yes;showfiles=no"
     )
 
     args <- c(
-      "/ImportTools", settings,
-      "/RunTool:showui=no;showprog=no;showrep=no;showprompt=no", tool_id,
+      "/ImportTools",
+      settings,
+      "/RunTool:showui=no;showprog=no;showrep=no;showprompt=no",
+      tool_id,
       pdf_in,
       output_opt
     )
 
     out <- system2(
       command = pdfxt_exe,
-      args    = shQuote(args, type = "cmd"),
-      stdout  = TRUE,
-      stderr  = TRUE
+      args = shQuote(args, type = "cmd"),
+      stdout = TRUE,
+      stderr = TRUE
     )
 
-    invisible(list(output_pdf = file.path(out_folder, out_name), stdout_stderr = out, settings_used = settings))
+    invisible(list(
+      output_pdf = file.path(out_folder, out_name),
+      stdout_stderr = out,
+      settings_used = settings
+    ))
   }
 
   # Setze Directory (User kann im Browser anwählen)
@@ -195,9 +266,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
   # Konstanten
   ## Liste der Dokumente, die später zusammengefügt werden sollen.
-  FILENAMES <- c("Mappe.pdf",
-                 "Ergebnisse.pdf",
-                 "Rohdaten.pdf")
+  FILENAMES <- c("Mappe.pdf", "Ergebnisse.pdf", "Rohdaten.pdf")
 
   FB_LENGTH <- 5 # Anzahl Seiten des physischen Fragebogens
   PROTOCOL <- "Protokoll.pdf"
@@ -216,11 +285,11 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
   mappen_pdf <- sub("\\.docm$", ".pdf", mappen_docm)
 
   # Welche PDFs existieren schon?
-  pdf_exists <- file.exists(mappen_pdf)  # gleicher Index wie mappen_docm
+  pdf_exists <- file.exists(mappen_pdf) # gleicher Index wie mappen_docm
 
   # Nur die DOCMs behalten, die noch kein PDF haben
   mappen_docm_todo <- mappen_docm[!pdf_exists]
-  mappen_pdf_todo  <- mappen_pdf[!pdf_exists]
+  mappen_pdf_todo <- mappen_pdf[!pdf_exists]
 
   # Nur diese konvertieren
   if (length(mappen_docm_todo) > 0) {
@@ -234,12 +303,13 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
   # Iteriere über jede Person...
   for (client in clients) {
-
     # Testen, ob IST 5 enthalten und Konfidenzintervall aktiviert ist
     ## Inhalt der Ergebnisse lesen
-    ergebnisse_pfad <- list.files(path = client,
-                                  pattern = "Ergebnisse\\.pdf$",
-                                  full.names = TRUE)
+    ergebnisse_pfad <- list.files(
+      path = client,
+      pattern = "Ergebnisse\\.pdf$",
+      full.names = TRUE
+    )
 
     #### Weg mit richtiger Funktion
     # ergebnisse_inhalt <- ergebnisse_pfad |>
@@ -255,8 +325,10 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
       stringr::str_replace(".pdf$", ".txt") |>
       readr::read_lines()
 
-    file.remove(ergebnisse_pfad |>
-                  stringr::str_replace(".pdf$", ".txt"))
+    file.remove(
+      ergebnisse_pfad |>
+        stringr::str_replace(".pdf$", ".txt")
+    )
 
     ## Prüfen ob IST 5 enthalten ist
     contains_ist5 <- ergebnisse_inhalt |>
@@ -264,24 +336,34 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
       any()
     ## Prüfen ob Konfidenzintervalle angegeben werden
     has_ci <- ergebnisse_inhalt |>
-      stringr::str_detect("Vertrauensintervall \\(Basis: Konsistenz, Wahrscheinlichkeit: (95%|90%)\\)") |>
+      stringr::str_detect(
+        "Vertrauensintervall \\(Basis: Konsistenz, Wahrscheinlichkeit: (95%|90%)\\)"
+      ) |>
       any()
     ## Wenn IST 5, aber keine KI (und kein Override), dann User warnen
-    if (contains_ist5 & !has_ci & !ist_override) {warning(paste("Bei Klient/in", client, "wurde der IST 5 in den Ergebnissen erkannt, aber keine Vertrauensintervalle. Bitte gehe im HTS auf den IST der Person > Report > beim Profil im Dropdown 'Konfidenzintervall' anwählen.\nFalls diese Warnung fehlerhaft ist, bitte im Funktionsaufruf das Argument `ist_override` auf `TRUE` setzen."))}
+    if (contains_ist5 & !has_ci & !ist_override) {
+      warning(paste(
+        "Bei Klient/in",
+        client,
+        "wurde der IST 5 in den Ergebnissen erkannt, aber keine Vertrauensintervalle. Bitte gehe im HTS auf den IST der Person > Report > beim Profil im Dropdown 'Konfidenzintervall' anwählen.\nFalls diese Warnung fehlerhaft ist, bitte im Funktionsaufruf das Argument `ist_override` auf `TRUE` setzen."
+      ))
+    }
 
     # Wenn Q-Level-Attest in den Dateien gefunden wird, füge es den Ergebnissen hinzu
-    if(any(grepl("Q-LEVELAttest", list.files(path = client)))) {
+    if (any(grepl("Q-LEVELAttest", list.files(path = client)))) {
       # Definiere Dateinamen/-pfade
-      ergebnisse2 <- paste(paste(client, client, sep = "/"), "Ergebnisse2.pdf", sep = "_")
+      ergebnisse2 <- paste(
+        paste(client, client, sep = "/"),
+        "Ergebnisse2.pdf",
+        sep = "_"
+      )
       qlevel <- paste(client, "Q-LEVELAttest.pdf", sep = "/")
 
       # Kombiniere Ergebnisse + Q-Level und speichere es unter anderem Namen
       # qpdf::pdf_combine(input = c(ergebnisse_pfad,
       #                             qlevel),
       #                   output = ergebnisse2)
-      pdfMerge(pdf_in = c(ergebnisse_pfad,
-                          qlevel),
-               pdf_out = ergebnisse)
+      pdfMerge(pdf_in = c(ergebnisse_pfad, qlevel), pdf_out = ergebnisse)
       # Entferne Ergebnisse & Q-Level und nenne Ergebnisse2 um
       ## Nicht nötig bei der eigenen Funktion `pdfMerge`
       # file.remove(ergebnisse_pfad, qlevel)
@@ -289,55 +371,66 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
       #             to = ergebnisse_pfad)
     }
 
-
     # Wenn ein Fragebogen gefunden wird, dann füge ihn den Rohdaten hinzu
-    if(any(grepl("Fragebogen", list.files(path = client)))) {
-      fragebogen_in <- list.files(path = client,
-                                  pattern = "Fragebogen\\.pdf$",
-                                  full.names = TRUE)
+    if (any(grepl("Fragebogen", list.files(path = client)))) {
+      fragebogen_in <- list.files(
+        path = client,
+        pattern = "Fragebogen\\.pdf$",
+        full.names = TRUE
+      )
       fragebogen_out <- fragebogen_in |>
         stringr::str_replace("Fragebogen", "Fragebogen_neu")
 
-
-      rohdaten <- list.files(path = client,
-                             pattern = "Rohdaten\\.pdf$",
-                             full.names = TRUE)
+      rohdaten <- list.files(
+        path = client,
+        pattern = "Rohdaten\\.pdf$",
+        full.names = TRUE
+      )
       rohdaten_temp <- rohdaten |>
         stringr::str_replace("Rohdaten", "Rohdaten_temp")
 
       # qpdf::pdf_combine(input = c(rohdaten,
       #                             fragebogen_in),
       #                   output = rohdaten_temp)
-      pdfMerge(pdf_in = c(rohdaten,
-                          fragebogen_in),
-               pdf_out = rohdaten)
+      pdfMerge(pdf_in = c(rohdaten, fragebogen_in), pdf_out = rohdaten)
       # Dateien umbenennen
       ## Nicht nötig bei der eigenen Funktion `pdfMerge`
       # file.rename(from = rohdaten_temp, to = rohdaten)
     }
 
     # Füge alles zusammen (Version für GEVER)
-    all_in_names <- paste(paste(client, client, sep = "/"), FILENAMES, sep = " ")
-    all_out_name <- paste(paste(client, client, sep = "/"),
-                          "Modul", paste(modul, "pdf", sep = "."),
-                          sep = " ")
+    all_in_names <- paste(
+      paste(client, client, sep = "/"),
+      FILENAMES,
+      sep = " "
+    )
+    all_out_name <- paste(
+      paste(client, client, sep = "/"),
+      "Modul",
+      paste(modul, "pdf", sep = "."),
+      sep = " "
+    )
     ## Bereite String vor, nach dem gesucht werden soll
     modul_name <- paste0("Modul ", modul, ".pdf")
     ## Suche nach dem String (-> prüfe, ob Dokument schon existiert)
-    if(!any(grepl(modul_name,
-                  list.files(client)))) {
+    if (!any(grepl(modul_name, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
       # qpdf::pdf_combine(input = all_in_names,
       #                   output = all_out_name)
-      pdfMerge(pdf_in = all_in_names,
-               pdf_out = all_out_name)
+      pdfMerge(pdf_in = all_in_names, pdf_out = all_out_name)
     }
 
     # Separiere das Protokoll
-    mappe <- list.files(path = client,
-                        pattern = "Mappe\\.pdf$",
-                        full.names = TRUE)
-    protocol_out_name <- paste(paste(client, client, sep = "/"), PROTOCOL, sep = " ")
+    mappe <- list.files(
+      path = client,
+      pattern = "Mappe\\.pdf$",
+      full.names = TRUE
+    )
+    protocol_out_name <- paste(
+      paste(client, client, sep = "/"),
+      PROTOCOL,
+      sep = " "
+    )
     rmm_out_name <- paste(paste(client, client, sep = "/"), RMM, sep = " ")
 
     ## Zuerst muss überprüft werden, ob das Protokoll 1 oder 2 Seiten hat
@@ -362,7 +455,8 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
       purrr::pluck(2) |>
       stringr::str_detect("Testresultate")
     # if(startP2) {pages <- 1} else {pages <- 2} # Version für qpdf
-    if(startP2) { # Version für eigenen Extraktor
+    if (startP2) {
+      # Version für eigenen Extraktor
       pages_protocol <- "p1"
       pages_rmm <- "p2-end"
     } else {
@@ -371,7 +465,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
     }
 
     ## Suche nach dem String (-> prüfe, ob Dokument schon existiert)
-    if(!any(grepl(PROTOCOL, list.files(client)))) {
+    if (!any(grepl(PROTOCOL, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
       # qpdf::pdf_subset(input = mappe,
       #                  pages = 1:pages,
@@ -381,7 +475,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
     # Separiere die Mappe
     ## Suche nach dem String (-> prüfe, ob Dokument schon existiert)
-    if(!any(grepl(RMM, list.files(client)))) {
+    if (!any(grepl(RMM, list.files(client)))) {
       # Wenn es noch nicht existiert, dann erstelle das Dokument
       # qpdf::pdf_subset(input = mappe,
       #                  pages = -(1:pages),
@@ -391,9 +485,7 @@ dodgy_merger <- function(directory = tcltk::tk_choose.dir(), ist_override = FALS
 
     # Entferne das Dokument "Mappe"
     file.remove(mappe, mappe_p2, mappe_p2_text)
-
   }
 
   print("Merge erfolgreich beendet.")
-
 }
